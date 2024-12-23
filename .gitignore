@@ -1,1 +1,4 @@
-.ipynb
+*.ipynb
+**/.ipynb_checkpoints/
+*.csv
+*.log
