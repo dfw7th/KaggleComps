@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pandas as pd
@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[2]:
+# In[ ]:
 
 
 train = pd.read_csv("/home/fw7th/Documents/ML_datasets/Kaggle_comp/titanic/train.csv")
@@ -19,7 +19,7 @@ test = pd.read_csv("/home/fw7th/Documents/ML_datasets/Kaggle_comp/titanic/test.c
 
 # ## Clean and Transform Stage
 
-# In[3]:
+# In[ ]:
 
 
 # Ok lets make copies of the train and test set
@@ -27,25 +27,25 @@ train_df = train.copy()
 test_df = test.copy()
 
 
-# In[4]:
+# In[ ]:
 
 
 train_df.head()
 
 
-# In[5]:
+# In[ ]:
 
 
 train_df.info()
 
 
-# In[6]:
+# In[ ]:
 
 
 train_df.isnull().sum().sort_values(ascending=False)
 
 
-# In[7]:
+# In[ ]:
 
 
 # Safe to say we drop Cabin, Let's fill Age
@@ -53,33 +53,33 @@ train_df["Age"] = train_df["Age"].fillna(train_df["Age"].median())
 test_df["Age"] = test_df["Age"].fillna(test_df["Age"].median())
 
 
-# In[8]:
+# In[ ]:
 
 
 train_df["Embarked"].unique()
 
 
-# In[9]:
+# In[ ]:
 
 
 train_df["Embarked"].value_counts()
 
 
-# In[10]:
+# In[ ]:
 
 
 # Let's fill the nan in Embarked with q
 train_df["Embarked"] = train_df[["Embarked"]].apply(lambda x: x.fillna(x.value_counts().index[0]))
 
 
-# In[11]:
+# In[ ]:
 
 
 train_df.isnull().sum().sort_values(ascending=False)
 # Nice
 
 
-# In[12]:
+# In[ ]:
 
 
 # Let's drop Cabin now 
@@ -87,7 +87,7 @@ train_df = train_df.drop("Cabin", axis=1)
 test_df = test_df.drop("Cabin", axis=1)
 
 
-# In[13]:
+# In[ ]:
 
 
 train_df.head()
@@ -96,14 +96,14 @@ train_df.head()
 # ## Feature Selection and EDA
 # #### Pclass
 
-# In[14]:
+# In[ ]:
 
 
 # Let's check each feature and shii, common EDA type shii, Let's start with Pclass
 sns.histplot(data=train_df, x = "Pclass")
 
 
-# In[15]:
+# In[ ]:
 
 
 sns.barplot(data=train_df, y="Survived", x="Pclass")
@@ -111,7 +111,7 @@ sns.barplot(data=train_df, y="Survived", x="Pclass")
 # People in class 3 had the lowest chance of survival, so the higher you paid the higher your chance of survival
 
 
-# In[16]:
+# In[ ]:
 
 
 # Let's the correlation btw the Survived and Pclass features using spearman's rank correlation, since Pclass is ordianal
@@ -119,7 +119,7 @@ from scipy.stats import spearmanr
 spearmanr(train_df["Survived"], train_df["Pclass"])
 
 
-# In[17]:
+# In[ ]:
 
 
 # They're not strongly correlated but we do see that the different classes have a different effect on the target variable which is good
@@ -141,7 +141,7 @@ print(f"Expected frequencies: \n{expected}")
 
 # #### Name
 
-# In[18]:
+# In[ ]:
 
 
 # I think we will drop Name, they are just all unique and shii
@@ -151,20 +151,20 @@ test_df = test_df.drop("Name", axis=1)
 
 # #### Sex
 
-# In[19]:
+# In[ ]:
 
 
 # Let's use barplots to check which class, if any, had a higher chance of survival
 sns.barplot(data=train_df, x="Survived", y="Sex")
 
 
-# In[20]:
+# In[ ]:
 
 
 # We actually see that females survived more, maybe men were self sacrificial and Chilvarous?
 
 
-# In[21]:
+# In[ ]:
 
 
 # Let's encode it with OneHotEncoder 
@@ -175,13 +175,13 @@ encoded_df = pd.DataFrame(encoded_array, columns=encoder.get_feature_names_out([
 train_df = pd.concat([train_df, encoded_df], axis=1)
 
 
-# In[22]:
+# In[ ]:
 
 
 train_df.head(3)
 
 
-# In[23]:
+# In[ ]:
 
 
 train_df = train_df.drop("Sex", axis=1)
@@ -189,13 +189,13 @@ train_df = train_df.drop("Sex", axis=1)
 
 # #### Age
 
-# In[24]:
+# In[ ]:
 
 
 sns.boxplot(data=train_df, x="Survived", y="Age")
 
 
-# In[25]:
+# In[ ]:
 
 
 # Age not looking too crazy rn, let's do point biserial correlation, let's see if it's useful in any way
@@ -203,7 +203,7 @@ from scipy.stats import pointbiserialr
 pointbiserialr(train_df["Age"], train_df["Survived"])
 
 
-# In[26]:
+# In[ ]:
 
 
 # Correlation is crazy bad, the p-value isn't too wild either, let's see ANOVA
@@ -211,14 +211,14 @@ from scipy.stats import f_oneway
 f_oneway(train_df["Age"], train_df["Survived"])
 
 
-# In[27]:
+# In[ ]:
 
 
 # Age not crazy rn, let's view the distro
 sns.histplot(train_df["Age"])
 
 
-# In[28]:
+# In[ ]:
 
 
 # That's crazily useless, let's try to group the age data 
@@ -233,7 +233,7 @@ plt.title("Survival Rate by Age Group")
 plt.show()
 
 
-# In[29]:
+# In[ ]:
 
 
 # Seems to be some difference, I'll drop Age and use AgeGroup, let's take a chi-squared test for it
@@ -249,13 +249,13 @@ print(f"Expected frequencies: \n{expected}")
 # I guess we'll keep AgeGroup, but let's drop Age
 
 
-# In[30]:
+# In[ ]:
 
 
 train_df = train_df.drop("Age", axis=1)
 
 
-# In[31]:
+# In[ ]:
 
 
 # Let's encode AgeGroup with OHE 
@@ -266,13 +266,13 @@ encoded_df = pd.DataFrame(encoded_array, columns=encoder.get_feature_names_out([
 train_df = pd.concat([train_df, encoded_df], axis=1)
 
 
-# In[32]:
+# In[ ]:
 
 
 train_df = train_df.drop("AgeGroup", axis=1)
 
 
-# In[33]:
+# In[ ]:
 
 
 train_df.head(3)
@@ -280,32 +280,32 @@ train_df.head(3)
 
 # #### SibSp
 
-# In[34]:
+# In[ ]:
 
 
 train_df.SibSp.unique()
 
 
-# In[35]:
+# In[ ]:
 
 
 sns.barplot(data=train_df, y="Survived", x="SibSp", errorbar=None)
 
 
-# In[36]:
+# In[ ]:
 
 
 train_df["SibSp"].value_counts()
 
 
-# In[37]:
+# In[ ]:
 
 
 # let's pop some pointbiserialr on this
 pointbiserialr(train_df["Survived"], train_df["SibSp"])
 
 
-# In[38]:
+# In[ ]:
 
 
 contingency_table = pd.crosstab(train_df['SibSp'], train_df['Survived'])
@@ -323,26 +323,26 @@ print(f"Expected frequencies: \n{expected}")
 
 # #### Parch
 
-# In[39]:
+# In[ ]:
 
 
 train_df["Parch"].value_counts()
 
 
-# In[40]:
+# In[ ]:
 
 
 sns.barplot(data=train_df, y="Survived", x="Parch", errorbar=None)
 
 
-# In[41]:
+# In[ ]:
 
 
 # let's pop some pointbiserialr on this
 pointbiserialr(train_df["Survived"], train_df["SibSp"])
 
 
-# In[42]:
+# In[ ]:
 
 
 contingency_table = pd.crosstab(train_df['Parch'], train_df['Survived'])
@@ -357,20 +357,20 @@ print(f"Expected frequencies: \n{expected}")
 
 # #### Ticket
 
-# In[43]:
+# In[ ]:
 
 
 train_df["Ticket"].value_counts()
 ## nahhhhh let's just go ahead and drop this no?
 
 
-# In[44]:
+# In[ ]:
 
 
 train_df = train_df.drop("Ticket", axis=1)
 
 
-# In[45]:
+# In[ ]:
 
 
 train_df.head(3)
@@ -378,14 +378,14 @@ train_df.head(3)
 
 # #### Fare
 
-# In[46]:
+# In[ ]:
 
 
 # Finally the good stuff
 sns.boxplot(data=train_df, x="Survived", y="Fare")
 
 
-# In[47]:
+# In[ ]:
 
 
 # Oh it's pretty obvious that people who paid higher have a giher chance of survival, I'm worried, this may be correlated to Pclass, we'll check
@@ -394,13 +394,13 @@ from scipy.stats import pearsonr, kruskal
 kruskal(train_df["Pclass"], train_df["Fare"]) # Kruskal-wallis test is like ANOVA, but does not assume normality
 
 
-# In[48]:
+# In[ ]:
 
 
 spearmanr(train_df["Pclass"], train_df["Fare"])
 
 
-# In[49]:
+# In[ ]:
 
 
 sns.boxplot(data=train_df, x="Pclass", y="Fare")
@@ -408,14 +408,14 @@ sns.boxplot(data=train_df, x="Pclass", y="Fare")
 # Seems that yes the Fare prices do affect the class of the ticket
 
 
-# In[50]:
+# In[ ]:
 
 
 # Nahh we good, let's check the feature now
 sns.histplot(train_df["Fare"])
 
 
-# In[51]:
+# In[ ]:
 
 
 # Let's check how Fare correlates to Survived
@@ -426,7 +426,7 @@ pointbiserialr(train_df["Survived"], train_df["Fare"])
 
 # #### Cabin
 
-# In[52]:
+# In[ ]:
 
 
 # We already dropped it smh
@@ -434,7 +434,7 @@ pointbiserialr(train_df["Survived"], train_df["Fare"])
 
 # #### Embarked
 
-# In[53]:
+# In[ ]:
 
 
 # Just gonna encode that with OHE, let's see a barplot tho
@@ -443,7 +443,7 @@ sns.barplot(data=train_df, x="Embarked", y="Survived")
 # People who embarked in Cherbourg have a higher chance of survival, chill rq, let's see some corr coeff
 
 
-# In[54]:
+# In[ ]:
 
 
 # Let's use cramer's V and then chi-squared test
@@ -454,7 +454,7 @@ association(contingency_table2)
 # Oh no it's kinda low, but I want to make the model and see how each feature helps the model, so we leave it for now
 
 
-# In[55]:
+# In[ ]:
 
 
 chi2, p, dof, expected = chi2_contingency(contingency_table2)
@@ -466,7 +466,7 @@ print(f"Expected frequencies: \n{expected}")
 # Yup there's variation in the categories
 
 
-# In[56]:
+# In[ ]:
 
 
 # Let's encode it with OHE 
@@ -477,19 +477,19 @@ encoded_df = pd.DataFrame(encoded_array, columns=encoder.get_feature_names_out([
 train_df = pd.concat([train_df, encoded_df], axis=1)
 
 
-# In[57]:
+# In[ ]:
 
 
 train_df = train_df.drop("Embarked", axis=1)
 
 
-# In[58]:
+# In[ ]:
 
 
 train_df.head(3)
 
 
-# In[59]:
+# In[ ]:
 
 
 # Let's roll with this for now, we'll see how the features affect the end result and see what we can drop
@@ -503,7 +503,7 @@ train_df.head(3)
 
 # # Modeling
 
-# In[60]:
+# In[ ]:
 
 
 # ok Let's start making our logistic regression model
@@ -512,7 +512,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 
-# In[61]:
+# In[ ]:
 
 
 # Getting the X and y dataframes
@@ -520,32 +520,32 @@ X = train_df.drop(["Survived", "PassengerId"], axis=1)
 y = train_df["Survived"]
 
 
-# In[62]:
+# In[ ]:
 
 
 # Just getting the train and test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, test_size=0.3)
 
 
-# In[63]:
+# In[ ]:
 
 
 log = LogisticRegression(n_jobs=-1, max_iter=1000)
 
 
-# In[64]:
+# In[ ]:
 
 
 log.fit(X_train, y_train)
 
 
-# In[65]:
+# In[ ]:
 
 
 y_pred = log.predict(X_test)
 
 
-# In[66]:
+# In[ ]:
 
 
 # Let's see the accuracy of the model
@@ -554,7 +554,7 @@ accuracy_score(y_test, y_pred)
 
 # ### Model Tuning
 
-# In[98]:
+# In[ ]:
 
 
 # Let's do feature Importances to see how important each feature is to out model's final outcome
@@ -572,7 +572,7 @@ print("\nFeature Importance (Coefficient and Odds Ratio):")
 print(feature_importance.sort_values(by='Coefficient', ascending=False))
 
 
-# In[68]:
+# In[ ]:
 
 
 # Recursive Feature Elimination(RFE), we make a new model which recursively checks for the best features to be used for modeling
@@ -587,26 +587,26 @@ print("\nSelected Features by RFE:")
 print(rfe_features)
 
 
-# In[74]:
+# In[ ]:
 
 
 # Ok I wanna make a model with L1 regularization
 l1_model = LogisticRegression(penalty='l1', solver='liblinear', max_iter=1000, C=1.0)
 
 
-# In[75]:
+# In[ ]:
 
 
 l1_model.fit(X_train, y_train)
 
 
-# In[76]:
+# In[ ]:
 
 
 new_preds = l1_model.predict(X_test)
 
 
-# In[79]:
+# In[ ]:
 
 
 # Let's do cross_val on the model
@@ -614,7 +614,7 @@ from sklearn.model_selection import cross_val_score
 cv_scores = cross_val_score(l1_model, X, y, cv=5, scoring='accuracy')
 
 
-# In[80]:
+# In[ ]:
 
 
 # Now let's calculate the mean CV score
@@ -623,7 +623,7 @@ mean_cv_score = cv_scores.mean()
 print("Average 5-fold cross-validation score:", mean_cv_score)
 
 
-# In[87]:
+# In[ ]:
 
 
 # I'm dead, how is it worse, well for our final magic trick, let's do GridSearchCV
@@ -638,13 +638,13 @@ param_grid = {
 grid_search = GridSearchCV(log, param_grid, scoring='accuracy', n_jobs=-1)
 
 
-# In[88]:
+# In[ ]:
 
 
 grid_search.fit(X_train, y_train)
 
 
-# In[92]:
+# In[ ]:
 
 
 # Let's getthe best regularization strength and penalty
@@ -655,25 +655,25 @@ if grid_search.best_params_['penalty'] == 'elasticnet':
     print("Best alpha:", grid_search.best_params_['l1_ratio'])
 
 
-# In[93]:
+# In[ ]:
 
 
 best_model = LogisticRegression(C=100.0, max_iter=10000, n_jobs=-1)
 
 
-# In[94]:
+# In[ ]:
 
 
 best_model.fit(X_train, y_train)
 
 
-# In[95]:
+# In[ ]:
 
 
 y_best = best_model.predict(X_test)
 
 
-# In[96]:
+# In[ ]:
 
 
 accuracy_score(y_test, y_best)
@@ -692,7 +692,7 @@ accuracy_score(y_test, y_best)
 # ##### Sex, Embarked - OneHotEncoded
 # ##### AgeGroup -  created from Age
 
-# In[97]:
+# In[ ]:
 
 
 # Let's stop here for today and make notes of what to do when we pick up next time
@@ -708,7 +708,7 @@ AgeGroup_Senior
 I might exclude:
 Sex_male
 Embarked_S
-# In[101]:
+# In[ ]:
 
 
 # Let's make a new model with these features above and see if it's accuracy gets higher
@@ -716,26 +716,26 @@ X_main = X.drop(["Parch", "AgeGroup_Adult"], axis=1)
 X_main_train, X_main_test, y_main_train, y_main_test = train_test_split(X_main, y, random_state=42, test_size=0.3)
 
 
-# In[103]:
+# In[ ]:
 
 
 new_model = LogisticRegression(C=100.0, max_iter=10000, n_jobs=-1)
 new_model.fit(X_main_train, y_main_train)
 
 
-# In[105]:
+# In[ ]:
 
 
 y_main_pred = new_model.predict(X_main_test)
 
 
-# In[106]:
+# In[ ]:
 
 
 accuracy_score(y_main_test, y_main_pred)
 
 
-# In[109]:
+# In[ ]:
 
 
 # It's still worse, this is crazy, chill rq let's go again
@@ -743,20 +743,20 @@ X_m = X.drop(["Parch", "AgeGroup_Adult", "Sex_male", "Embarked_S"], axis=1)
 X_m_train, X_m_test, y_m_train, y_m_test = train_test_split(X_m, y, random_state=42, test_size=0.3)
 
 
-# In[110]:
+# In[ ]:
 
 
 new_model = LogisticRegression(C=100.0, max_iter=10000, n_jobs=-1)
 new_model.fit(X_m_train, y_m_train)
 
 
-# In[111]:
+# In[ ]:
 
 
 y_m_pred = new_model.predict(X_m_test)
 
 
-# In[112]:
+# In[ ]:
 
 
 accuracy_score(y_m_test, y_m_pred)
@@ -771,6 +771,95 @@ accuracy_score(y_m_test, y_m_pred)
 # # Pipelining and final model
 
 # ## What to do
-# #
 # #### 1. Pipeline everything I did
 # #### 2. Do not drop anything from the final X features, it doesn't improve model performance
+
+# In[ ]:
+
+
+# Let's see the transformation I did on the test set
+
+
+# ### List of Transformations and the columns they were affected by
+# ##### Age, Embarked - fillna with median
+# ##### Cabin, Name, Age, Ticket - Dropped 
+# ##### Sex, Embarked - OneHotEncoded
+# ##### AgeGroup -  created from Age
+
+# In[ ]:
+
+
+# Let's gooo??!!
+
+
+# In[ ]:
+
+
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+
+
+# In[ ]:
+
+
+# We need to make a custom transformer for the AgeGroup thing (actually did this ourselves)
+from sklearn.base import BaseEstimator, TransformerMixin
+class AgeGroupMake(TransformerMixin, BaseEstimator):
+    def fit(self, X, y=None):
+        # We aren't learning anything from the data
+        return self
+    def transform(self, X):
+        # Make a copy of the original dataframe to be used
+        X = X.copy
+        
+        # Let's make the AgeGroup column
+        X["AgeGroup"] = pd.cut(
+            X["Age"],
+            bins=[0, 13, 19, 60, np.inf],
+            labels=["Child", "Teen", "Adult", "Senior"]
+        )
+
+        return X
+
+
+# In[ ]:
+
+
+# Through my master detective skills, I have noticed that the ordinal encoder would actually disrupt how the ticket classes are arranged.
+# In ordinal encoder, 1 is lowest, 3 is highest, but that isn't how our own class works, we have to make a whole encoding custom class just for the feature smh
+class CustomPclassEncoder(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+
+    # This will inverse the classes, you feel muahhahahh
+    def rransform(self, X):
+        X_copy = X.copy()
+        X_copy["Pclass"] = X_copy["Pclass"].map({
+                                            1 : 3, 
+                                            2 : 2,
+                                            3 : 1
+        })
+        return X_copy
+
+
+# In[ ]:
+
+
+# For SipSp and Parch, I think I'll make a feature that adds both to see the no. of family members were onboard, nice
+class FamMake(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+    def transform(self, X):
+        X = X.copy()
+        X["Fam"] = X["SibSp"] + X["Parch"]
+        return X
+
+
+# In[ ]:
+
+
+Age, Embarked - fillna with median
+Cabin, Name, Age, Ticket - Dropped 
+Sex, Embarked - OneHotEncoded
+AgeGroup, Pclass, Fam -  custom Transformers
+
